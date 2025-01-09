@@ -1,6 +1,12 @@
 pipeline {
     agent any
 
+    environment {
+        VUGEN_SCRIPT = 'C:/Users/Administrator/Documents/VuGen/Scripts/WebHttpHtml1/WebHttpHtml1.lrs'
+        CONTROLLER_SCENARIO = 'C:/Users/Administrator/Documents/Controller/scenario/Scenario1.lrc'
+        ANALYSIS_PATH = 'C:/Users/Administrator/Documents/Session1/Session1.lra'
+    }
+
     stages {
         stage('Checkout') {
             steps {
@@ -9,32 +15,52 @@ pipeline {
             }
         }
 
-        stage('Build') {
-            steps {
-                // Contoh build script
-                echo 'Building the application...'
-                // Misalnya, untuk aplikasi Node.js:
-                // sh 'npm install && npm run build'
-            }
-        }
+        // stage('Build') {
+        //     steps {
+        //         // Contoh build script
+        //         echo 'Building the application...'
+        //         // Misalnya, untuk aplikasi Node.js:
+        //         // sh 'npm install && npm run build'
+        //     }
+        // }
 
-        stage('Test') {
-            steps {
-                // Contoh menjalankan tes
-                echo 'Running tests...'
-                // Misalnya, untuk aplikasi Node.js:
-                // sh 'npm test'
-            }
-        }
+        // stage('Test') {
+        //     steps {
+        //         // Contoh menjalankan tes
+        //         echo 'Running tests...'
+        //         // Misalnya, untuk aplikasi Node.js:
+        //         // sh 'npm test'
+        //     }
+        // }
 
-        stage('Test with LoadRunner') {
+        stage('Setup') {
             steps {
                 script {
-                    echo 'Running LoadRunner performance tests...'
+                    // Menyiapkan direktori atau environment jika diperlukan
+                    echo 'Preparing the environment for LoadRunner testing...'
+                }
+            }
+        }
 
-                    // Menjalankan LoadRunner Controller dengan file skenario
+        stage('Run LoadRunner VuGen Script') {
+            steps {
+                script {
+                    // Jalankan script VuGen untuk memastikan script berjalan
+                    echo "Running VuGen script from: ${env.VUGEN_SCRIPT}"
+                    bat """ 
+                    "C:/Program Files (x86)/OpenText/LoadRunner/bin/VuGen.exe" -run -script "${env.VUGEN_SCRIPT}" 
+                    """
+                }
+            }
+        }
+
+        stage('Run Controller Scenario') {
+            steps {
+                script {
+                    // Jalankan scenario dengan Controller
+                    echo "Running scenario from Controller at: ${env.CONTROLLER_SCENARIO}"
                     bat """
-                    Wlrun.exe -Run -TestPath "C:/Users/Administrator/Documents/Controller/scenario/Scenario1.lrs" -ResultName "C:/Users/Administrator/Documents/POC/CI-CD/Controller-Result"
+                    "C:/Program Files (x86)/OpenText/LoadRunner/bin/Wlrun.exe" -run -scenario "${env.CONTROLLER_SCENARIO}"
                     """
                 }
             }
@@ -43,11 +69,10 @@ pipeline {
         stage('Analyze Results') {
             steps {
                 script {
-                    echo 'Analyzing LoadRunner test results...'
-
-                    // Analisis hasil pengujian menggunakan LRAnalysisLauncher
+                    // Jalankan analisis hasil tes
+                    echo "Analyzing results at: ${env.ANALYSIS_PATH}"
                     bat """
-                    LRAnalysisLauncher.exe -input "C:/Users/Administrator/Documents/POC/CI-CD/Analyze-Result/results.lrr" -output "C:/Users/Administrator/Documents/POC/CI-CD/Analyze-Result"
+                    "C:/Program Files (x86)/OpenText/LoadRunner/bin/AnalysisUI.exe" -run -session "${env.ANALYSIS_PATH}"
                     """
                 }
             }
