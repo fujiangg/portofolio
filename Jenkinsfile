@@ -27,6 +27,32 @@ pipeline {
             }
         }
 
+        stage('Test with LoadRunner') {
+            steps {
+                script {
+                    echo 'Running LoadRunner performance tests...'
+
+                    // Menjalankan LoadRunner Controller dengan file skenario
+                    bat """
+                    Wlrun.exe -Run -TestPath "C:/Users/Administrator/Documents/Controller/scenario/Scenario1.lrs" -ResultName "C:/Users/Administrator/Documents/POC/CI-CD/Controller-Result"
+                    """
+                }
+            }
+        }
+
+        stage('Analyze Results') {
+            steps {
+                script {
+                    echo 'Analyzing LoadRunner test results...'
+
+                    // Analisis hasil pengujian menggunakan LRAnalysisLauncher
+                    bat """
+                    LRAnalysisLauncher.exe -input "C:/Users/Administrator/Documents/POC/CI-CD/Analyze-Result/results.lrr" -output "C:/Users/Administrator/Documents/POC/CI-CD/Analyze-Result"
+                    """
+                }
+            }
+        }
+
         stage('Deploy') {
             steps {
                 // Contoh deployment
