@@ -66,17 +66,17 @@ pipeline {
             }
         }
 
-        stage('Analyze Results') {
-            steps {
-                script {
-                    // Jalankan analisis hasil tes
-                    echo "Analyzing results at: ${env.ANALYSIS_PATH}"
-                    bat """
-                    "C:/Program Files (x86)/OpenText/LoadRunner/bin/AnalysisUI.exe" -run -session "${env.ANALYSIS_PATH}"
-                    """
-                }
-            }
-        }
+        // stage('Analyze Results') {
+        //     steps {
+        //         script {
+        //             // Jalankan analisis hasil tes
+        //             echo "Analyzing results at: ${env.ANALYSIS_PATH}"
+        //             bat """
+        //             "C:/Program Files (x86)/OpenText/LoadRunner/bin/AnalysisUI.exe" -run -session "${env.ANALYSIS_PATH}"
+        //             """
+        //         }
+        //     }
+        // }
 
         stage('Deploy') {
             steps {
